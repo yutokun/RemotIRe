@@ -28,15 +28,16 @@ void setup()
 
 void loop()
 {
-  char key;
+  char command;
   // Receive();
 
   if (Serial.available())
   {
-    key = Serial.read();
-    Serial.write(key);
-    Send();
-    delay(1000);
+    command = Serial.read();
+    if (command == 's')
+      Send();
+    else
+      Serial.println("Unknown command.");
   }
 }
 
