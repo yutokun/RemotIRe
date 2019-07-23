@@ -1,0 +1,6 @@
+{
+    "ssid": "Your SSID Here",
+    "pswd": "Your Password Here",
+    "command": "http://path/to/command.txt",
+    "commandIO": "http://path/to/command-io.php"
+}
