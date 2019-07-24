@@ -3,9 +3,7 @@ Control IR-receivable devices remotely from ESP8266 based system.
 
 ## Roadmap
 
-- [x] Send
-- [ ] Receive
-- [ ] Control from HTTP request
+See [Issues](https://github.com/yutokun/RemotIRe/issues)
 
 ## License
 
