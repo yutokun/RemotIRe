@@ -48,24 +48,7 @@ void loop()
 {
   // Receive();
   String command = GET(commandPath);
-  Serial.println(command);
-  if (command == "s")
-  {
-    SendStart();
-    POST(commandIOPath, "c=wait");
-  }
-  else if (command == "t")
-  {
-    SendTerminate();
-    POST(commandIOPath, "c=wait");
-  }
-  else if (command == "wait")
-    Serial.println("Wait for next command.");
-  else
-  {
-    Serial.println("Unknown command. Fixing...");
-    POST(commandIOPath, "c=wait");
-  }
+  SendCommand(command);
 
   for (size_t i = 0; i < 3; i++)
     delay(1000);
@@ -141,21 +124,29 @@ void Receive()
   }
 }
 
-void SendStart()
+void SendCommand(String command)
 {
-  Serial.println("Sending Starting Signal...");
-  sender.sendRaw(onSignal, sizeof(onSignal) / sizeof(onSignal[0]), khz);
-  Serial.println("Sent");
+  Serial.println("Command: " + command);
 
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(100);
-  digitalWrite(LED_BUILTIN, HIGH);
-}
+  if (command == "s")
+  {
+    sender.sendRaw(onSignal, sizeof(onSignal) / sizeof(onSignal[0]), khz);
+  }
+  else if (command == "t")
+  {
+    sender.sendRaw(offSignal, sizeof(offSignal) / sizeof(offSignal[0]), khz);
+  }
+  else if (command == "wait")
+  {
+    Serial.println("Wait for next command.");
+    return;
+  }
+  else
+  {
+    Serial.println("Unknown command. Fixing...");
+  }
 
-void SendTerminate()
-{
-  Serial.println("Sending Termination Signal...");
-  sender.sendRaw(offSignal, sizeof(offSignal) / sizeof(offSignal[0]), khz);
+  POST(commandIOPath, "c=wait");
   Serial.println("Sent");
 
   digitalWrite(LED_BUILTIN, LOW);
