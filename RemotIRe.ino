@@ -119,6 +119,7 @@ void Receive()
 
 void SendCommand(String command)
 {
+  Serial.println();
   Serial.println("Command: " + command);
 
   if (command == "s")
@@ -150,19 +151,17 @@ void SendCommand(String command)
 void ConnectToWiFi()
 {
   WiFi.mode(WIFI_STA);
-  // WiFi.printDiag(Serial);
-  Serial.println(ssid);
-  Serial.println(pswd);
   WiFi.begin(ssid, pswd);
+  Serial.println();
+  Serial.println("Connecting to Wi-Fi...");
   while (WiFi.status() != WL_CONNECTED)
   {
     Serial.print(".");
     delay(1000);
   }
 
-  Serial.println("Connected to Wi-Fi");
+  Serial.println("Connected.");
 
-  WiFi.printDiag(Serial);
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
 }
