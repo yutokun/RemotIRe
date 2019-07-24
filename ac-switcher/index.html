@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport", content="width=device-width,initial-scale=1">
+	<title>AC Switcher</title>
+	<style>
+		* {
+			font-family: sans-serif;
+		}
+		h1 {
+			text-align: center;
+		}
+		a {
+			display: block;
+			margin: 1em auto;
+			padding: 0.5em;
+			text-align: center;
+			width: 100px;
+			font-weight: bold;
+			font-size: 2em;
+			border: 1px solid black;
+		}
+		a:hover {
+			background-color: gray;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<h1>エアコン制御</h1>
+	<a id="start">Start</a>
+	<a id="stop">Stop</a>
+	<script>
+		document.querySelector("a#start").addEventListener("click", () => SetCommand("c=s"));
+		document.querySelector("a#stop").addEventListener("click", () => SetCommand("c=t"));
+		function SetCommand(command) {
+			let request = new XMLHttpRequest();
+			request.open("POST", "command-io.php");
+			request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			request.send(command);
+			console.log("sent" + command);
+		}
+	</script>
+</body>
+</html>
