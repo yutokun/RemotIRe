@@ -15,6 +15,8 @@ const uint8_t timeout = 15;
 IRrecv receiver(pin, bufferSize, timeout, true);
 decode_results results;
 const uint16_t minUnknownSize = 12;
+unsigned long timerStartTime;
+bool receiving;
 
 // Sender
 int khz = 38;
@@ -51,9 +53,25 @@ void setup()
 void loop()
 {
   String command = GET(commandPath);
-  if (command == "r")
+  if (command == "r" && receiving == false)
   {
-    Receive();
+    receiving = true;
+    timerStartTime = millis();
+    Serial.println();
+    Serial.println("Receiving IR signals for 5 seconds...");
+    receiver.enableIRIn();
+    return;
+  }
+  else if (command == "r")
+  {
+    auto elapsed = millis() - timerStartTime;
+    if (elapsed < 5000 && Decode() == false)
+      return;
+
+    receiving = false;
+    receiver.disableIRIn();
+    Serial.println("Finished receiving sequence.");
+    POST(commandIOPath, "c=wait");
   }
   else
   {
@@ -102,17 +120,8 @@ bool LoadConfig()
   return true;
 }
 
-void Receive()
+bool Decode()
 {
-  Serial.println();
-  Serial.println("Receiving IR signals...");
-  receiver.enableIRIn();
-  for (size_t i = 5; i > 0; i--)
-  {
-    Serial.println(i);
-    delay(1000);
-  }
-
   if (receiver.decode(&results))
   {
     uint32_t now = millis();
@@ -128,11 +137,11 @@ void Receive()
     yield(); // Feed the WDT (again)
     Serial.println(resultToSourceCode(&results));
     yield(); // Feed the WDT (again)
+
+    return true;
   }
 
-  receiver.disableIRIn();
-  Serial.println("Finished receiving sequence.");
-  POST(commandIOPath, "c=wait");
+  return false;
 }
 
 void SendCommand(String command)
