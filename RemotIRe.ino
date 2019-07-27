@@ -14,6 +14,7 @@ const uint16_t bufferSize = 1024;
 const uint8_t timeout = 15;
 IRrecv receiver(pin, bufferSize, timeout, true);
 decode_results results;
+const uint16_t minUnknownSize = 12;
 
 // Sender
 int khz = 38;
@@ -34,7 +35,7 @@ void setup()
   Serial.begin(115200, SERIAL_8N1);
   while (!Serial)
     delay(50);
-  receiver.enableIRIn();
+  receiver.setUnknownThreshold(minUnknownSize);
 
   if (!LoadConfig())
   {
@@ -49,9 +50,15 @@ void setup()
 
 void loop()
 {
-  // Receive();
   String command = GET(commandPath);
-  SendCommand(command);
+  if (command == "r")
+  {
+    Receive();
+  }
+  else
+  {
+    SendCommand(command);
+  }
 
   for (size_t i = 0; i < 3; i++)
     delay(1000);
@@ -97,6 +104,15 @@ bool LoadConfig()
 
 void Receive()
 {
+  Serial.println();
+  Serial.println("Receiving IR signals...");
+  receiver.enableIRIn();
+  for (size_t i = 5; i > 0; i--)
+  {
+    Serial.println(i);
+    delay(1000);
+  }
+
   if (receiver.decode(&results))
   {
     uint32_t now = millis();
@@ -106,17 +122,17 @@ void Receive()
       Serial.printf("IR code is too big. Please increase bufferSize.");
     }
 
-    // Display the basic output of what we found.
     Serial.print(resultToHumanReadableBasic(&results));
     yield(); // Feed the WDT as the text output can take a while to print.
-    // Output RAW timing info of the result.
     Serial.println(resultToTimingInfo(&results));
     yield(); // Feed the WDT (again)
-    // Output the results as source code
     Serial.println(resultToSourceCode(&results));
-    Serial.println(); // Blank line between entries
-    yield();          // Feed the WDT (again)
+    yield(); // Feed the WDT (again)
   }
+
+  receiver.disableIRIn();
+  Serial.println("Finished receiving sequence.");
+  POST(commandIOPath, "c=wait");
 }
 
 void SendCommand(String command)
