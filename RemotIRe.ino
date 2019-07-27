@@ -43,6 +43,8 @@ void setup()
   }
 
   ConnectToWiFi();
+
+  digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void loop()
